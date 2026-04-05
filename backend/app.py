@@ -32,7 +32,7 @@ def index():
 @app.route("/api/start", methods=["POST"])
 def start_session():
     """Initialize a new environment session."""
-    data = request.get_json()
+    data = request.get_json(force=True, silent=True)
     idea = data.get("idea", "").strip()
     difficulty = data.get("difficulty", "hard").lower()
     use_llm = data.get("use_llm", False)
@@ -81,7 +81,7 @@ def start_session():
 @app.route("/api/step", methods=["POST"])
 def run_step():
     """Execute the next action in the environment."""
-    data = request.get_json()
+    data = request.get_json(force=True, silent=True)
     session_id = data.get("session_id")
 
     if session_id not in sessions:
@@ -131,7 +131,7 @@ def run_step():
 @app.route("/api/grade_llm", methods=["POST"])
 def run_llm_grade():
     """Run optional LLM-based grading."""
-    data = request.get_json()
+    data = request.get_json(force=True, silent=True)
     session_id = data.get("session_id")
 
     if session_id not in sessions:
@@ -154,7 +154,7 @@ global_env = None
 @app.route("/reset", methods=["POST"])
 def reset_env():
     global global_env
-    data = request.get_json() or {}
+    data = request.get_json(force=True, silent=True) or {}
     idea = data.get("idea", "")
     
     global_env = StartupEnv(idea=idea, use_llm=True)
@@ -167,7 +167,7 @@ def step_env():
     if global_env is None:
         return jsonify({"error": "Environment not initialized. Call /reset first."}), 400
         
-    data = request.get_json() or {}
+    data = request.get_json(force=True, silent=True) or {}
     action = data.get("action")
     if not action:
         return jsonify({"error": "Action required in JSON body."}), 400
