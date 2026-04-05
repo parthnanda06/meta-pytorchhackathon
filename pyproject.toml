@@ -1,19 +1,13 @@
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
-name = "startup-validator-agent"
+name = "startup-validator"
 version = "0.1.0"
-authors = [
-  { name="Parth Bhanushali" }
-]
-description = "An OpenEnv-compliant AI environment for step-based evaluation of startup ideas."
-readme = "README.md"
-requires-python = ">=3.10"
+description = "OpenEnv AI startup validator"
 dependencies = [
-    "openai>=1.0.0",
-    "pyyaml>=6.0",
-    "python-dotenv>=1.0.0",
-    "flask>=3.0.0"
+"flask",
+"openenv-core>=0.2.0",
+"openai",
+"python-dotenv"
 ]
+
+[project.scripts]
+server = "server.app:app"
