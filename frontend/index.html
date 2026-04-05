@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Startup Idea Validator — AI-Powered Analysis</title>
+    <meta name="description" content="OpenEnv-compliant AI environment for step-based startup idea validation. Analyze problem, solution, and market dimensions." />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        /* ============================================================
+           DESIGN SYSTEM
+           ============================================================ */
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a28;
+            --bg-card-hover: #22223a;
+            --bg-glass: rgba(26, 26, 40, 0.7);
+            --border: rgba(255, 255, 255, 0.06);
+            --border-active: rgba(139, 92, 246, 0.4);
+
+            --text-primary: #f0f0f5;
+            --text-secondary: #9a9ab0;
+            --text-muted: #5a5a72;
+
+            --accent-purple: #8b5cf6;
+            --accent-violet: #7c3aed;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-emerald: #10b981;
+            --accent-amber: #f59e0b;
+            --accent-rose: #f43f5e;
+
+            --gradient-primary: linear-gradient(135deg, #8b5cf6 0%, #3b82f6 50%, #06b6d4 100%);
+            --gradient-card: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            --gradient-glow: radial-gradient(ellipse at center, rgba(139, 92, 246, 0.15) 0%, transparent 70%);
+
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 48px rgba(0, 0, 0, 0.5);
+            --shadow-glow: 0 0 30px rgba(139, 92, 246, 0.2);
+
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           BACKGROUND EFFECTS
+           ============================================================ */
+        .bg-effects {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .bg-orb-1 {
+            width: 400px; height: 400px;
+            background: rgba(139, 92, 246, 0.15);
+            top: -100px; left: -100px;
+        }
+
+        .bg-orb-2 {
+            width: 350px; height: 350px;
+            background: rgba(59, 130, 246, 0.1);
+            top: 50%; right: -80px;
+            animation-delay: -7s;
+        }
+
+        .bg-orb-3 {
+            width: 300px; height: 300px;
+            background: rgba(6, 182, 212, 0.08);
+            bottom: -50px; left: 30%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        .bg-grid {
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ============================================================
+           LAYOUT
+           ============================================================ */
+        .app-container {
+            position: relative;
+            z-index: 1;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .app-header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        .app-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 16px;
+            background: rgba(139, 92, 246, 0.12);
+            border: 1px solid rgba(139, 92, 246, 0.25);
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 20px;
+        }
+
+        .app-badge .dot {
+            width: 6px; height: 6px;
+            background: var(--accent-emerald);
+            border-radius: 50%;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        .app-title {
+            font-size: 42px;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 12px;
+        }
+
+        .app-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            font-weight: 400;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           CARDS
+           ============================================================ */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 32px;
+            margin-bottom: 24px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: var(--border-active);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .card-icon {
+            width: 40px; height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .card-icon.purple { background: rgba(139, 92, 246, 0.15); }
+        .card-icon.blue { background: rgba(59, 130, 246, 0.15); }
+        .card-icon.cyan { background: rgba(6, 182, 212, 0.15); }
+        .card-icon.emerald { background: rgba(16, 185, 129, 0.15); }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .card-description {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ============================================================
+           FORMS
+           ============================================================ */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 15px;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .form-input:focus {
+            border-color: var(--accent-purple);
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+            line-height: 1.6;
+        }
+
+        /* ============================================================
+           DIFFICULTY SELECTOR
+           ============================================================ */
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .difficulty-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .difficulty-option input {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .difficulty-card {
+            padding: 16px;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .difficulty-option input:checked + .difficulty-card {
+            border-color: var(--accent-purple);
+            background: rgba(139, 92, 246, 0.08);
+            box-shadow: 0 0 20px rgba(139, 92, 246, 0.1);
+        }
+
+        .difficulty-card:hover {
+            border-color: rgba(139, 92, 246, 0.3);
+        }
+
+        .difficulty-level {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .difficulty-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .difficulty-reward {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 3px 10px;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-emerald);
+        }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-md), 0 0 20px rgba(139, 92, 246, 0.3);
+            width: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), 0 0 40px rgba(139, 92, 246, 0.4);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-step {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+            width: 100%;
+        }
+
+        .btn-step:hover {
+            background: rgba(16, 185, 129, 0.2);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-step:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background: rgba(244, 63, 94, 0.1);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            color: var(--accent-rose);
+            padding: 10px 24px;
+            font-size: 13px;
+        }
+
+        .btn-reset:hover {
+            background: rgba(244, 63, 94, 0.18);
+        }
+
+        /* ============================================================
+           PROGRESS / STEPS
+           ============================================================ */
+        .progress-bar-container {
+            margin-bottom: 28px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .progress-value {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-purple);
+        }
+
+        .progress-track {
+            height: 6px;
+            background: var(--bg-secondary);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 50px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px rgba(139, 92, 246, 0.4);
+        }
+
+        /* Step timeline */
+        .steps-timeline {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .step-item {
+            display: flex;
+            gap: 16px;
+            padding: 20px 0;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeSlideIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeSlideIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .step-marker {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .step-dot {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: white;
+        }
+
+        .step-dot.problem { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .step-dot.solution { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .step-dot.market { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+
+        .step-line {
+            width: 2px;
+            flex: 1;
+            min-height: 12px;
+            background: linear-gradient(to bottom, rgba(139, 92, 246, 0.3), transparent);
+        }
+
+        .step-content {
+            flex: 1;
+            padding-bottom: 8px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .step-action {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .step-reward {
+            padding: 3px 12px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--accent-emerald);
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            padding: 14px 18px;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .verdict-badge {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 5px 16px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .verdict-strong {
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--accent-emerald);
+        }
+
+        .verdict-weak {
+            background: rgba(244, 63, 94, 0.12);
+            border: 1px solid rgba(244, 63, 94, 0.3);
+            color: var(--accent-rose);
+        }
+
+        /* ============================================================
+           RESULTS
+           ============================================================ */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .result-card {
+            padding: 24px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            text-align: center;
+        }
+
+        .result-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .result-value.purple { color: var(--accent-purple); }
+        .result-value.emerald { color: var(--accent-emerald); }
+
+        .result-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ============================================================
+           STATE VIEWER
+           ============================================================ */
+        .state-viewer {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .state-viewer pre {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* ============================================================
+           SPINNER
+           ============================================================ */
+        .spinner {
+            width: 18px; height: 18px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            display: none;
+        }
+
+        .loading .spinner { display: inline-block; }
+        .loading .btn-text { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================================
+           SECTIONS VISIBILITY
+           ============================================================ */
+        .section { display: none; }
+        .section.active { display: block; }
+
+        .section.active {
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 640px) {
+            .app-title { font-size: 28px; }
+            .difficulty-grid { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .card { padding: 24px; }
+            .app-container { padding: 24px 16px 60px; }
+        }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 50px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.12); }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 14px 24px;
+            background: var(--bg-card);
+            border: 1px solid var(--accent-rose);
+            border-radius: var(--radius-md);
+            color: var(--accent-rose);
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: var(--shadow-lg);
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Background effects -->
+    <div class="bg-effects">
+        <div class="bg-orb bg-orb-1"></div>
+        <div class="bg-orb bg-orb-2"></div>
+        <div class="bg-orb bg-orb-3"></div>
+        <div class="bg-grid"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-badge">
+                <span class="dot"></span>
+                OpenEnv Compliant
+            </div>
+            <h1 class="app-title">Startup Idea Validator</h1>
+            <p class="app-subtitle">AI-powered step-based analysis of your startup idea across problem, solution, and market dimensions.</p>
+        </header>
+
+        <!-- ====================================================
+             SECTION 1: SETUP
+             ==================================================== -->
+        <div id="section-setup" class="section active">
+            <div class="card" id="card-idea">
+                <div class="card-header">
+                    <div class="card-icon purple">&#x1F4A1;</div>
+                    <div>
+                        <div class="card-title">Your Startup Idea</div>
+                        <div class="card-description">Describe the idea you want to validate</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="ideaInput">Startup Idea</label>
+                    <textarea class="form-input" id="ideaInput" placeholder="e.g. An AI-powered platform that helps early-stage founders validate their startup ideas by analysing market data, competitor landscape, and customer pain points in real-time." rows="3"></textarea>
+                </div>
+            </div>
+
+            <div class="card" id="card-difficulty">
+                <div class="card-header">
+                    <div class="card-icon blue">&#x2699;</div>
+                    <div>
+                        <div class="card-title">Difficulty Level</div>
+                        <div class="card-description">Choose how deep the analysis should go</div>
+                    </div>
+                </div>
+                <div class="difficulty-grid">
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="easy" />
+                        <div class="difficulty-card">
+                            <div class="difficulty-level">Easy</div>
+                            <div class="difficulty-desc">Problem only</div>
+                            <span class="difficulty-reward">+0.3 max</span>
+                        </div>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="medium" />
+                        <div class="difficulty-card">
+                            <div class="difficulty-level">Medium</div>
+                            <div class="difficulty-desc">Problem + Solution</div>
+                            <span class="difficulty-reward">+0.6 max</span>
+                        </div>
+                    </label>
+                    <label class="difficulty-option">
+                        <input type="radio" name="difficulty" value="hard" checked />
+                        <div class="difficulty-card">
+                            <div class="difficulty-level">Hard</div>
+                            <div class="difficulty-desc">Full Pipeline</div>
+                            <span class="difficulty-reward">+1.0 max</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" id="btnStart" onclick="startSession()">
+                <span class="btn-text">Start Validation</span>
+                <div class="spinner"></div>
+            </button>
+        </div>
+
+        <!-- ====================================================
+             SECTION 2: RUNNING
+             ==================================================== -->
+        <div id="section-running" class="section">
+            <!-- Progress -->
+            <div class="card" id="card-progress">
+                <div class="card-header">
+                    <div class="card-icon emerald">&#x26A1;</div>
+                    <div>
+                        <div class="card-title">Analysis Progress</div>
+                        <div class="card-description" id="taskDescription"></div>
+                    </div>
+                    <button class="btn btn-reset" onclick="resetSession()" style="margin-left:auto;">Reset</button>
+                </div>
+
+                <div class="progress-bar-container">
+                    <div class="progress-header">
+                        <span class="progress-label">Reward</span>
+                        <span class="progress-value" id="rewardDisplay">0.0 / 1.0</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Steps timeline -->
+                <div class="steps-timeline" id="stepsTimeline"></div>
+
+                <!-- Next step button -->
+                <button class="btn btn-step" id="btnStep" onclick="runStep()">
+                    <span class="btn-text" id="stepBtnText">Run Next Step</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ====================================================
+             SECTION 3: RESULTS
+             ==================================================== -->
+        <div id="section-results" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon cyan">&#x1F3AF;</div>
+                    <div>
+                        <div class="card-title">Validation Results</div>
+                        <div class="card-description">Analysis complete — here are the scores</div>
+                    </div>
+                    <button class="btn btn-reset" onclick="resetSession()" style="margin-left:auto;">New Idea</button>
+                </div>
+
+                <div class="results-grid" style="margin-bottom: 24px;">
+                    <div class="result-card">
+                        <div class="result-value emerald" id="finalReward">0.0</div>
+                        <div class="result-label">Total Reward</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value purple" id="finalScore">0.0</div>
+                        <div class="result-label">Quality Score</div>
+                    </div>
+                </div>
+
+                <!-- Full steps review -->
+                <div class="steps-timeline" id="resultsTimeline"></div>
+            </div>
+
+            <!-- State viewer -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-icon blue">&#x1F4CB;</div>
+                    <div>
+                        <div class="card-title">Final State</div>
+                        <div class="card-description">Complete environment state (JSON)</div>
+                    </div>
+                </div>
+                <div class="state-viewer">
+                    <pre id="stateJson"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast for errors -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // ============================================================
+        // STATE
+        // ============================================================
+        let sessionId = null;
+        let maxReward = 1.0;
+        let currentReward = 0.0;
+        let stepIndex = 0;
+
+        // ============================================================
+        // HELPERS
+        // ============================================================
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 4000);
+        }
+
+        function setLoading(btn, loading) {
+            if (loading) btn.classList.add('loading');
+            else btn.classList.remove('loading');
+            btn.disabled = loading;
+        }
+
+        const stepColors = {
+            problem: 'problem',
+            solution: 'solution',
+            market: 'market',
+        };
+
+        const stepNumbers = { problem: '1', solution: '2', market: '3' };
+
+        function parseVerdict(text) {
+            const match = text.match(/Verdict:\s*(Strong|Weak)\s+(problem|solution|market)/i);
+            if (!match) return { body: text, verdict: null };
+            const body = text.replace(/\n*Verdict:.*$/i, '').trim();
+            const isStrong = match[1].toLowerCase() === 'strong';
+            const label = match[0];
+            return {
+                body,
+                verdict: `<span class="verdict-badge ${isStrong ? 'verdict-strong' : 'verdict-weak'}">${label}</span>`
+            };
+        }
+
+        // ============================================================
+        // START SESSION
+        // ============================================================
+        async function startSession() {
+            const idea = document.getElementById('ideaInput').value.trim();
+            if (!idea) { showToast('Please enter a startup idea.'); return; }
+
+            const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+            const btn = document.getElementById('btnStart');
+            setLoading(btn, true);
+
+            try {
+                const res = await fetch('/api/start', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ idea, difficulty, use_llm: false }),
+                });
+                const data = await res.json();
+                if (!res.ok) { showToast(data.error); return; }
+
+                sessionId = data.session_id;
+                maxReward = data.task.max_reward;
+                currentReward = 0;
+                stepIndex = 0;
+
+                // Setup running section
+                document.getElementById('taskDescription').textContent = data.task.description;
+                document.getElementById('rewardDisplay').textContent = `0.0 / ${maxReward}`;
+                document.getElementById('progressFill').style.width = '0%';
+                document.getElementById('stepsTimeline').innerHTML = '';
+                document.getElementById('stepBtnText').textContent =
+                    `Run: ${data.next_action || 'Done'}`;
+
+                showSection('section-running');
+            } catch (err) {
+                showToast('Connection error. Is the server running?');
+            } finally {
+                setLoading(btn, false);
+            }
+        }
+
+        // ============================================================
+        // RUN STEP
+        // ============================================================
+        async function runStep() {
+            if (!sessionId) return;
+
+            const btn = document.getElementById('btnStep');
+            setLoading(btn, true);
+
+            try {
+                const res = await fetch('/api/step', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId }),
+                });
+                const data = await res.json();
+                if (!res.ok) { showToast(data.error); return; }
+
+                const step = data.step;
+                currentReward = data.total_reward;
+                stepIndex++;
+
+                // Update progress
+                const pct = (currentReward / maxReward) * 100;
+                document.getElementById('progressFill').style.width = pct + '%';
+                document.getElementById('rewardDisplay').textContent =
+                    `${currentReward.toFixed(1)} / ${maxReward}`;
+
+                // Add step to timeline
+                const key = step.analysis_key;
+                const timeline = document.getElementById('stepsTimeline');
+                const parsed = parseVerdict(step.analysis_text);
+                const verdictHtml = parsed.verdict || '';
+                const stepHtml = `
+                    <div class="step-item" style="animation-delay: ${stepIndex * 0.1}s">
+                        <div class="step-marker">
+                            <div class="step-dot ${stepColors[key]}">${stepNumbers[key]}</div>
+                            <div class="step-line"></div>
+                        </div>
+                        <div class="step-content">
+                            <div class="step-header">
+                                <span class="step-action">${key} Analysis</span>
+                                <span class="step-reward">+${step.reward}</span>
+                            </div>
+                            <div class="step-text">${parsed.body}</div>
+                            ${verdictHtml}
+                        </div>
+                    </div>
+                `;
+                timeline.insertAdjacentHTML('beforeend', stepHtml);
+
+                // Check if done
+                if (data.done) {
+                    setTimeout(() => showResults(data), 600);
+                } else {
+                    document.getElementById('stepBtnText').textContent =
+                        `Run: ${data.next_action}`;
+                }
+            } catch (err) {
+                showToast('Step failed. Please try again.');
+            } finally {
+                setLoading(btn, false);
+            }
+        }
+
+        // ============================================================
+        // SHOW RESULTS
+        // ============================================================
+        function showResults(data) {
+            document.getElementById('finalReward').textContent =
+                data.total_reward.toFixed(1);
+            document.getElementById('finalScore').textContent =
+                (data.rule_score || 0).toFixed(4);
+            document.getElementById('stateJson').textContent =
+                JSON.stringify(data.state, null, 2);
+
+            // Copy timeline to results
+            document.getElementById('resultsTimeline').innerHTML =
+                document.getElementById('stepsTimeline').innerHTML;
+
+            showSection('section-results');
+        }
+
+        // ============================================================
+        // RESET
+        // ============================================================
+        function resetSession() {
+            sessionId = null;
+            currentReward = 0;
+            stepIndex = 0;
+            showSection('section-setup');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,141 @@
+# OpenEnv specification for the Startup Idea Validator environment.
+# See: https://github.com/openenv/openenv-spec
+
+name: startup-idea-validator
+version: "1.0.0"
+description: >
+  An OpenEnv-compliant AI environment that evaluates startup ideas through
+  step-based analysis of problem, solution, and market dimensions.
+
+# ──────────────────────────────────────────────────────────────────────────
+# Environment interface
+# ──────────────────────────────────────────────────────────────────────────
+
+environment:
+  class: env.environment.StartupEnv
+  init_params:
+    idea:
+      type: string
+      description: The startup idea to evaluate.
+    use_llm:
+      type: boolean
+      default: true
+      description: Whether to use LLM for generating analysis content.
+
+  methods:
+    reset:
+      description: Reset the environment and return the initial state.
+      returns: state
+
+    step:
+      description: Execute an action and return (state, reward, done).
+      params:
+        action:
+          type: string
+          enum: [analyze_problem, analyze_solution, analyze_market]
+      returns: [state, reward, done]
+
+    state:
+      description: Return the current environment state.
+      returns: state
+
+# ──────────────────────────────────────────────────────────────────────────
+# Action space
+# ──────────────────────────────────────────────────────────────────────────
+
+actions:
+  - name: analyze_problem
+    description: Perform problem-space analysis for the startup idea.
+    reward: 0.3
+
+  - name: analyze_solution
+    description: Analyze the proposed solution and its differentiation.
+    reward: 0.3
+
+  - name: analyze_market
+    description: Evaluate the market opportunity, TAM, competition.
+    reward: 0.4
+
+# ──────────────────────────────────────────────────────────────────────────
+# Observation / State schema
+# ──────────────────────────────────────────────────────────────────────────
+
+observations:
+  type: object
+  properties:
+    idea:
+      type: string
+      description: The startup idea being evaluated.
+    analysis:
+      type: object
+      properties:
+        problem:
+          type: string
+          description: Analysis of the problem the startup addresses.
+        solution:
+          type: string
+          description: Analysis of the proposed solution.
+        market:
+          type: string
+          description: Analysis of the market opportunity.
+
+# ──────────────────────────────────────────────────────────────────────────
+# Reward structure
+# ──────────────────────────────────────────────────────────────────────────
+
+rewards:
+  type: partial
+  total: 1.0
+  breakdown:
+    analyze_problem: 0.3
+    analyze_solution: 0.3
+    analyze_market: 0.4
+
+# ──────────────────────────────────────────────────────────────────────────
+# Tasks (difficulty levels)
+# ──────────────────────────────────────────────────────────────────────────
+
+tasks:
+  - name: easy
+    description: Analyze the problem space only.
+    actions: [analyze_problem]
+    max_reward: 0.3
+
+  - name: medium
+    description: Analyze problem and solution.
+    actions: [analyze_problem, analyze_solution]
+    max_reward: 0.6
+
+  - name: hard
+    description: Full pipeline — problem, solution, and market.
+    actions: [analyze_problem, analyze_solution, analyze_market]
+    max_reward: 1.0
+
+# ──────────────────────────────────────────────────────────────────────────
+# Grading
+# ──────────────────────────────────────────────────────────────────────────
+
+grading:
+  rule_based:
+    module: grader.grader
+    function: grade
+    description: Deterministic scoring based on completeness and keyword quality.
+    score_range: [0.0, 1.0]
+
+  llm_based:
+    module: grader.grader
+    function: grade_with_llm
+    description: LLM-based quality assessment (temperature=0).
+    score_range: [0.0, 1.0]
+    optional: true
+
+# ──────────────────────────────────────────────────────────────────────────
+# Agent
+# ──────────────────────────────────────────────────────────────────────────
+
+agent:
+  class: agent.agent.Agent
+  deterministic: true
+  description: >
+    Selects actions sequentially based on missing state fields:
+    problem → solution → market.
