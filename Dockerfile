@@ -16,7 +16,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project source
 COPY . .
 
-# Default command — run the hard task in offline mode
-# Override with:  docker run -e OPENAI_API_KEY=sk-... startup-validator --difficulty hard
-ENTRYPOINT ["python", "backend/run.py"]
-CMD ["--difficulty", "hard", "--no-llm"]
+# Default command to run the web UI for Hugging Face Spaces
+EXPOSE 7860
+CMD ["python", "backend/app.py"]
