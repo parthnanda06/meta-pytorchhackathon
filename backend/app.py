@@ -186,5 +186,8 @@ def get_state():
         return jsonify({"error": "Environment not initialized. Call /reset first."}), 400
     return jsonify(global_env.state())
 
-if __name__ == "__main__":
+def main():
     app.run(host="0.0.0.0", port=7860)
+
+if __name__ == "__main__":
+    main()
