@@ -1,3 +1,12 @@
+---
+title: Startup Idea Validator
+emoji: 🚀
+colorFrom: indigo
+colorTo: purple
+sdk: docker
+pinned: false
+---
+
 # 🚀 Startup Idea Validator (OpenEnv AI Environment)
 
 An OpenEnv-compliant AI environment for step-based evaluation of startup ideas using structured reasoning and automated grading.
