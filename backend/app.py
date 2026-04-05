@@ -147,5 +147,44 @@ def run_llm_grade():
         return jsonify({"error": str(e)}), 500
 
 
+# --- OPENENV HTTP COMPLIANCE ENDPOINTS ---
+
+global_env = None
+
+@app.route("/reset", methods=["POST"])
+def reset_env():
+    global global_env
+    data = request.get_json() or {}
+    idea = data.get("idea", "")
+    
+    global_env = StartupEnv(idea=idea, use_llm=True)
+    state = global_env.reset()
+    return jsonify(state)
+
+@app.route("/step", methods=["POST"])
+def step_env():
+    global global_env
+    if global_env is None:
+        return jsonify({"error": "Environment not initialized. Call /reset first."}), 400
+        
+    data = request.get_json() or {}
+    action = data.get("action")
+    if not action:
+        return jsonify({"error": "Action required in JSON body."}), 400
+        
+    state, reward, done = global_env.step(action)
+    return jsonify({
+        "state": state,
+        "reward": float(reward),
+        "done": bool(done)
+    })
+
+@app.route("/state", methods=["GET"])
+def get_state():
+    global global_env
+    if global_env is None:
+        return jsonify({"error": "Environment not initialized. Call /reset first."}), 400
+    return jsonify(global_env.state())
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=7860)
