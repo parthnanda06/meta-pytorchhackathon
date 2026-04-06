@@ -125,11 +125,10 @@ def generate_analysis(
     """
     api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
     model_name = os.getenv("MODEL_NAME", model)
-    api_key = os.getenv("OPENAI_API_KEY")
-    local_image_name = os.getenv("LOCAL_IMAGE_NAME")
+    api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 
     if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable is required.")
+        raise ValueError("HF_TOKEN environment variable is required.")
 
     client = OpenAI(
         base_url=api_base_url,
@@ -180,11 +179,10 @@ def grade_analysis_with_llm(
     """
     api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
     model_name = os.getenv("MODEL_NAME", model)
-    api_key = os.getenv("OPENAI_API_KEY")
-    local_image_name = os.getenv("LOCAL_IMAGE_NAME")
+    api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 
     if not api_key:
-        raise ValueError("OPENAI_API_KEY environment variable is required.")
+        raise ValueError("HF_TOKEN environment variable is required.")
 
     client = OpenAI(
         base_url=api_base_url,

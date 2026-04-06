@@ -37,24 +37,24 @@ def main() -> None:
         
         state = env.reset()
         
-        print("START")
+        print("[START]")
         while True:
             action = agent.act(state)
             if action is None:
                 break
             
-            print(f"STEP: {action}")
+            print(f"[STEP] {action}")
             state, reward, done = env.step(action)
             if done:
                 break
                 
         score = grade(state)
         print(f"SCORE: {score:.4f}")
-        print("END")
+        print("[END]")
         
     except Exception as e:
         print(f"ERROR: {str(e)}")
-        print("END")
+        print("[END]")
         sys.exit(1)
 
 if __name__ == "__main__":

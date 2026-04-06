@@ -46,7 +46,7 @@ def start_session():
         return jsonify({"error": str(e)}), 400
 
     # Check if LLM is available
-    has_api_key = bool(os.environ.get("OPENAI_API_KEY"))
+    has_api_key = bool(os.environ.get("HF_TOKEN") or os.environ.get("OPENAI_API_KEY"))
     if use_llm and not has_api_key:
         use_llm = False
 
