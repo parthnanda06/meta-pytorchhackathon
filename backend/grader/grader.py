@@ -18,8 +18,8 @@ from llm.client import grade_analysis_with_llm
 # ---------------------------------------------------------------------------
 
 # Minimum character thresholds for "adequate" analysis depth.
-MIN_LENGTH_GOOD = 200
-MIN_LENGTH_ACCEPTABLE = 80
+MIN_LENGTH_GOOD = 300
+MIN_LENGTH_ACCEPTABLE = 150
 
 # Weight per section (must sum to 1.0).
 SECTION_WEIGHTS: Dict[str, float] = {
@@ -49,6 +49,12 @@ def grade(state: Dict[str, Any]) -> float:
 
     Final score = weighted sum across sections.
     """
+    idea = str(state.get("idea", ""))
+    alpha_chars = sum(c.isalpha() for c in idea)
+    if alpha_chars < 15:
+        # Penalize if the input idea is largely just symbols or empty
+        return 0.0
+
     analysis: Dict[str, str] = state.get("analysis", {})
     total = 0.0
 
@@ -70,7 +76,8 @@ def grade(state: Dict[str, Any]) -> float:
         keywords = QUALITY_KEYWORDS.get(section, [])
         if keywords:
             hits = sum(1 for kw in keywords if kw.lower() in text.lower())
-            keyword_score = min(0.3, (hits / len(keywords)) * 0.3)
+            # Require more hits to get the full bonus point
+            keyword_score = min(0.3, (hits / max(1, len(keywords) - 2)) * 0.3)
         else:
             keyword_score = 0.0
 
