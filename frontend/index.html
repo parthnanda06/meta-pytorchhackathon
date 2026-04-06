@@ -733,9 +733,17 @@
                         <div class="card-description">Describe the idea you want to validate</div>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" for="ideaInput">Startup Idea</label>
+                <div class="form-group" id="group-idea">
+                    <label class="form-label" for="ideaInput">Startup Idea / Problem</label>
                     <textarea class="form-input" id="ideaInput" placeholder="e.g. An AI-powered platform that helps early-stage founders validate their startup ideas by analysing market data, competitor landscape, and customer pain points in real-time." rows="3"></textarea>
+                </div>
+                <div class="form-group" id="group-solution" style="display: none;">
+                    <label class="form-label" for="solutionInput">Proposed Solution</label>
+                    <textarea class="form-input" id="solutionInput" placeholder="How do you plan to solve this problem?" rows="3"></textarea>
+                </div>
+                <div class="form-group" id="group-market" style="display: none;">
+                    <label class="form-label" for="marketInput">Target Market</label>
+                    <textarea class="form-input" id="marketInput" placeholder="Who are your target customers?" rows="3"></textarea>
                 </div>
             </div>
 
@@ -749,7 +757,7 @@
                 </div>
                 <div class="difficulty-grid">
                     <label class="difficulty-option">
-                        <input type="radio" name="difficulty" value="easy" />
+                        <input type="radio" name="difficulty" value="easy" onchange="updateFormFields()" />
                         <div class="difficulty-card">
                             <div class="difficulty-level">Easy</div>
                             <div class="difficulty-desc">Problem only</div>
@@ -757,7 +765,7 @@
                         </div>
                     </label>
                     <label class="difficulty-option">
-                        <input type="radio" name="difficulty" value="medium" />
+                        <input type="radio" name="difficulty" value="medium" onchange="updateFormFields()" />
                         <div class="difficulty-card">
                             <div class="difficulty-level">Medium</div>
                             <div class="difficulty-desc">Problem + Solution</div>
@@ -765,7 +773,7 @@
                         </div>
                     </label>
                     <label class="difficulty-option">
-                        <input type="radio" name="difficulty" value="hard" checked />
+                        <input type="radio" name="difficulty" value="hard" checked onchange="updateFormFields()" />
                         <div class="difficulty-card">
                             <div class="difficulty-level">Hard</div>
                             <div class="difficulty-desc">Full Pipeline</div>
@@ -882,6 +890,26 @@
             document.getElementById(id).classList.add('active');
         }
 
+        function updateFormFields() {
+            const diff = document.querySelector('input[name="difficulty"]:checked');
+            const difficulty = diff ? diff.value : 'hard';
+            const groupSolution = document.getElementById('group-solution');
+            const groupMarket = document.getElementById('group-market');
+            
+            if (difficulty === 'easy') {
+                if(groupSolution) groupSolution.style.display = 'none';
+                if(groupMarket) groupMarket.style.display = 'none';
+            } else if (difficulty === 'medium') {
+                if(groupSolution) groupSolution.style.display = 'block';
+                if(groupMarket) groupMarket.style.display = 'none';
+            } else if (difficulty === 'hard') {
+                if(groupSolution) groupSolution.style.display = 'block';
+                if(groupMarket) groupMarket.style.display = 'block';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', updateFormFields);
+
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.textContent = msg;
@@ -919,10 +947,22 @@
         // START SESSION
         // ============================================================
         async function startSession() {
-            const idea = document.getElementById('ideaInput').value.trim();
-            if (!idea) { showToast('Please enter a startup idea.'); return; }
+            const ideaBase = document.getElementById('ideaInput').value.trim();
+            const solution = document.getElementById('solutionInput').value.trim();
+            const market = document.getElementById('marketInput').value.trim();
+            
+            if (!ideaBase) { showToast('Please enter a startup idea.'); return; }
 
             const difficulty = document.querySelector('input[name="difficulty"]:checked').value;
+            
+            let idea = ideaBase;
+            if (difficulty === 'medium' || difficulty === 'hard') {
+                if (solution) idea += "\n\nProposed Solution:\n" + solution;
+            }
+            if (difficulty === 'hard') {
+                if (market) idea += "\n\nTarget Market:\n" + market;
+            }
+
             const btn = document.getElementById('btnStart');
             setLoading(btn, true);
 
