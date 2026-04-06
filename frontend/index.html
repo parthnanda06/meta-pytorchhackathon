@@ -846,8 +846,20 @@
                     </div>
                     <div class="result-card">
                         <div class="result-value purple" id="finalScore">0.0</div>
-                        <div class="result-label">Quality Score</div>
+                        <div class="result-label">Base Score</div>
                     </div>
+                </div>
+
+                <!-- LLM AI Grader Results -->
+                <div class="card-title" style="margin-bottom: 12px; display: none;" id="llmGradeTitle">🤖 Deep AI Grading</div>
+                <div class="results-grid" style="margin-bottom: 24px; display: none; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));" id="llmGradeGrid">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <div style="text-align: center; margin-bottom: 24px;">
+                    <button class="btn btn-primary" onclick="exportMarkdown()" id="btnExport" style="width: auto;">
+                        <span class="btn-text">📥 Export Report (Markdown)</span>
+                    </button>
                 </div>
 
                 <!-- Full steps review -->
@@ -881,6 +893,8 @@
         let maxReward = 1.0;
         let currentReward = 0.0;
         let stepIndex = 0;
+        let sessionData = null;
+        let llmScores = null;
 
         // ============================================================
         // HELPERS
@@ -1065,6 +1079,7 @@
         // SHOW RESULTS
         // ============================================================
         function showResults(data) {
+            sessionData = data;
             document.getElementById('finalReward').textContent =
                 data.total_reward.toFixed(1);
             document.getElementById('finalScore').textContent =
@@ -1077,6 +1092,85 @@
                 document.getElementById('stepsTimeline').innerHTML;
 
             showSection('section-results');
+            
+            // Kick off deep grading
+            fetchLLMGrade();
+        }
+
+        async function fetchLLMGrade() {
+            const grid = document.getElementById('llmGradeGrid');
+            const title = document.getElementById('llmGradeTitle');
+            title.style.display = 'block';
+            grid.style.display = 'grid';
+            grid.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--text-muted);"><div class="spinner" style="display: inline-block; border-top-color: var(--accent-purple);"></div> Generating Deep Analysis...</div>';
+            
+            try {
+                const res = await fetch('/api/grade_llm', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: sessionId }),
+                });
+                const data = await res.json();
+                if (data.llm_grade) {
+                    llmScores = data.llm_grade;
+                    grid.innerHTML = `
+                        <div class="result-card">
+                            <div class="result-value" style="font-size: 24px;">${data.llm_grade.problem}/0.3</div>
+                            <div class="result-label">Problem</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" style="font-size: 24px;">${data.llm_grade.solution}/0.3</div>
+                            <div class="result-label">Solution</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value" style="font-size: 24px;">${data.llm_grade.market}/0.4</div>
+                            <div class="result-label">Market</div>
+                        </div>
+                        <div class="result-card">
+                            <div class="result-value purple" style="font-size: 24px;">${data.llm_grade.final.toFixed(2)}</div>
+                            <div class="result-label">Final LLM</div>
+                        </div>
+                    `;
+                } else if (data.error) {
+                    grid.innerHTML = `<div style="grid-column: 1 / -1; color: var(--accent-rose);text-align:center;">Failed to generate deep grade. Open Envoy API key missing?</div>`;
+                }
+            } catch (err) {
+                 grid.innerHTML = `<div style="grid-column: 1 / -1; color: var(--accent-rose);text-align:center;">Error connecting to API.</div>`;
+            }
+        }
+
+        function exportMarkdown() {
+            if (!sessionData || !sessionData.state) {
+                showToast("No data to export.");
+                return;
+            }
+            const st = sessionData.state;
+            let md = `# Startup Environment Report\n\n`;
+            md += `## Initial Context\n${st.idea}\n\n`;
+            
+            if (st.analysis.problem) md += `## 1. Problem Analysis\n${st.analysis.problem}\n\n`;
+            if (st.analysis.solution) md += `## 2. Solution Analysis\n${st.analysis.solution}\n\n`;
+            if (st.analysis.market) md += `## 3. Market Analysis\n${st.analysis.market}\n\n`;
+            
+            md += `## Automated Scores\n`;
+            md += `- Base Quality Score: ${(sessionData.rule_score || 0).toFixed(4)}\n`;
+            md += `- RL Cumulative Reward: ${sessionData.total_reward.toFixed(1)}\n`;
+            
+            if (llmScores) {
+                md += `\n### Deep LLM Grade Breakdown\n`;
+                md += `- Problem: ${llmScores.problem} / 0.3\n`;
+                md += `- Solution: ${llmScores.solution} / 0.3\n`;
+                md += `- Market: ${llmScores.market} / 0.4\n`;
+                md += `**Final Deep Score: ${llmScores.final} / 1.0**\n`;
+            }
+            
+            const blob = new Blob([md], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `startup_report_${Date.now()}.md`;
+            a.click();
+            URL.revokeObjectURL(url);
         }
 
         // ============================================================
@@ -1084,6 +1178,8 @@
         // ============================================================
         function resetSession() {
             sessionId = null;
+            sessionData = null;
+            llmScores = null;
             currentReward = 0;
             stepIndex = 0;
             showSection('section-setup');
