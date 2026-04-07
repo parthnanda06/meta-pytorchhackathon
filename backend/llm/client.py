@@ -123,41 +123,42 @@ def generate_analysis(
     str
         The generated analysis text (ending with a verdict line).
     """
-    api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-    model_name = os.getenv("MODEL_NAME", model)
-    api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
+    try:
+        api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+        model_name = os.getenv("MODEL_NAME", model)
+        api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 
-    if not api_key:
-        raise ValueError("HF_TOKEN environment variable is required.")
+        if not api_key:
+            raise ValueError("HF_TOKEN environment variable is required.")
 
-    client = OpenAI(
-        base_url=api_base_url,
-        api_key=api_key
-    )
+        client = OpenAI(
+            base_url=api_base_url,
+            api_key=api_key
+        )
 
-    # Build the user prompt with contextual substitution ----------------
-    template = ANALYSIS_PROMPTS[analysis_type]
-    analysis = current_state.get("analysis", {})
+        template = ANALYSIS_PROMPTS[analysis_type]
+        analysis = current_state.get("analysis", {})
 
-    prompt = template.format(
-        idea=idea,
-        problem_analysis=analysis.get("problem", "N/A"),
-        solution_analysis=analysis.get("solution", "N/A"),
-    )
+        prompt = template.format(
+            idea=idea,
+            problem_analysis=analysis.get("problem", "N/A"),
+            solution_analysis=analysis.get("solution", "N/A"),
+        )
 
-    system_prompt = SYSTEM_PROMPTS[analysis_type]
+        system_prompt = SYSTEM_PROMPTS[analysis_type]
 
-    response = client.chat.completions.create(
-        model=model_name,
-        temperature=0,
-        max_tokens=600,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": prompt},
-        ],
-    )
-
-    return response.choices[0].message.content.strip()
+        response = client.chat.completions.create(
+            model=model_name,
+            temperature=0,
+            max_tokens=600,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt},
+            ],
+        )
+        return response.choices[0].message.content.strip()
+    except Exception as e:
+        return f"Error connecting to LLM: {str(e)}\n\nVerdict: Weak {analysis_type}"
 
 
 def grade_analysis_with_llm(
@@ -177,62 +178,64 @@ def grade_analysis_with_llm(
             "raw": str,
         }
     """
-    api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-    model_name = os.getenv("MODEL_NAME", model)
-    api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
+    try:
+        api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
+        model_name = os.getenv("MODEL_NAME", model)
+        api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
 
-    if not api_key:
-        raise ValueError("HF_TOKEN environment variable is required.")
+        if not api_key:
+            raise ValueError("HF_TOKEN environment variable is required.")
 
-    client = OpenAI(
-        base_url=api_base_url,
-        api_key=api_key
-    )
+        client = OpenAI(
+            base_url=api_base_url,
+            api_key=api_key
+        )
 
-    # Build the full analysis text for context
-    analysis_text = (
-        f"Problem analysis: {analysis.get('problem', 'MISSING')}\n\n"
-        f"Solution analysis: {analysis.get('solution', 'MISSING')}\n\n"
-        f"Market analysis: {analysis.get('market', 'MISSING')}"
-    )
+        analysis_text = (
+            f"Problem analysis: {analysis.get('problem', 'MISSING')}\n\n"
+            f"Solution analysis: {analysis.get('solution', 'MISSING')}\n\n"
+            f"Market analysis: {analysis.get('market', 'MISSING')}"
+        )
 
-    grading_prompt = (
-        "You are a strict and skeptical startup evaluator.\n\n"
-        "Evaluate the overall startup analysis and assign a score "
-        "between 0.0 and 1.0.\n\n"
-        f"Startup idea: {idea}\n\n"
-        f"{analysis_text}\n\n"
-        "Scoring criteria:\n"
-        "- Problem clarity (0.0-0.3)\n"
-        "- Solution feasibility (0.0-0.3)\n"
-        "- Market viability (0.0-0.4)\n\n"
-        "Strict evaluation rules:\n"
-        "- Be harsh — do NOT give high scores easily\n"
-        "- Penalize vague or generic analysis\n"
-        "- Penalize unrealistic solutions\n"
-        "- Penalize crowded or undifferentiated markets\n"
-        "- If any section is weak, reduce score significantly\n"
-        "- If the idea feels like a copy of an existing product, penalize heavily\n\n"
-        "Output format (STRICT — follow exactly):\n"
-        "Problem: X/0.3\n"
-        "Solution: Y/0.3\n"
-        "Market: Z/0.4\n"
-        "Final: TOTAL\n\n"
-        "Return ONLY this format. No explanation."
-    )
+        grading_prompt = (
+            "You are a strict and skeptical startup evaluator.\n\n"
+            "Evaluate the overall startup analysis and assign a score "
+            "between 0.0 and 1.0.\n\n"
+            f"Startup idea: {idea}\n\n"
+            f"{analysis_text}\n\n"
+            "Scoring criteria:\n"
+            "- Problem clarity (0.0-0.3)\n"
+            "- Solution feasibility (0.0-0.3)\n"
+            "- Market viability (0.0-0.4)\n\n"
+            "Strict evaluation rules:\n"
+            "- Be harsh — do NOT give high scores easily\n"
+            "- Penalize vague or generic analysis\n"
+            "- Penalize unrealistic solutions\n"
+            "- Penalize crowded or undifferentiated markets\n"
+            "- If any section is weak, reduce score significantly\n"
+            "- If the idea feels like a copy of an existing product, penalize heavily\n\n"
+            "Output format (STRICT — follow exactly):\n"
+            "Problem: X/0.3\n"
+            "Solution: Y/0.3\n"
+            "Market: Z/0.4\n"
+            "Final: TOTAL\n\n"
+            "Return ONLY this format. No explanation."
+        )
 
-    response = client.chat.completions.create(
-        model=model_name,
-        temperature=0,
-        max_tokens=50,
-        messages=[
-            {"role": "system", "content": "You are a strict scoring system. Follow the output format exactly. No text beyond the four score lines."},
-            {"role": "user", "content": grading_prompt},
-        ],
-    )
+        response = client.chat.completions.create(
+            model=model_name,
+            temperature=0,
+            max_tokens=50,
+            messages=[
+                {"role": "system", "content": "You are a strict scoring system. Follow the output format exactly. No text beyond the four score lines."},
+                {"role": "user", "content": grading_prompt},
+            ],
+        )
 
-    raw = response.choices[0].message.content.strip()
-    return _parse_structured_score(raw)
+        raw = response.choices[0].message.content.strip()
+        return _parse_structured_score(raw)
+    except Exception as e:
+        return _parse_structured_score("")
 
 
 def _parse_structured_score(raw: str) -> Dict[str, Any]:
