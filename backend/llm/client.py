@@ -263,7 +263,7 @@ def _parse_structured_score(raw: str) -> Dict[str, Any]:
             value = float(match.group(2))
             result[key] = value
 
-    # Ensure final is within bounds
-    result["final"] = max(0.0, min(1.0, result["final"]))
+    # Ensure final is within strict bounds (strictly between 0 and 1)
+    result["final"] = max(0.01, min(0.99, result["final"]))
 
     return result

@@ -53,7 +53,7 @@ def grade(state: Dict[str, Any]) -> float:
     alpha_chars = sum(c.isalpha() for c in idea)
     if alpha_chars < 15:
         # Penalize if the input idea is largely just symbols or empty
-        return 0.0
+        return 0.01
 
     analysis: Dict[str, str] = state.get("analysis", {})
     total = 0.0
@@ -81,10 +81,15 @@ def grade(state: Dict[str, Any]) -> float:
         else:
             keyword_score = 0.0
 
-        section_score = min(1.0, base + keyword_score)
+        section_score = min(0.99, base + keyword_score)
         total += section_score * weight
 
-    return round(total, 4)
+    final_score = round(total, 4)
+    if final_score <= 0.0:
+        return 0.01
+    elif final_score >= 1.0:
+        return 0.99
+    return final_score
 
 
 # ---------------------------------------------------------------------------
