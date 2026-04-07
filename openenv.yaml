@@ -123,13 +123,13 @@ grading:
     module: grader.grader
     function: grade
     description: Deterministic scoring based on completeness and keyword quality.
-    score_range: [0.0, 1.0]
+    score_range: [0.01, 0.99]
 
   llm_based:
     module: grader.grader
     function: grade_with_llm
     description: LLM-based quality assessment (temperature=0).
-    score_range: [0.0, 1.0]
+    score_range: [0.01, 0.99]
     optional: true
 
 # ──────────────────────────────────────────────────────────────────────────
