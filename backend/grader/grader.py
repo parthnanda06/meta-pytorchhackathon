@@ -25,7 +25,7 @@ MIN_LENGTH_ACCEPTABLE = 150
 SECTION_WEIGHTS: Dict[str, float] = {
     "problem": 0.3,
     "solution": 0.3,
-    "market": 0.4,
+    "market": 0.39,
 }
 
 # Quality keywords per section (presence → bonus).
