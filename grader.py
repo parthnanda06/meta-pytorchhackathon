@@ -12,6 +12,18 @@ from typing import Any, Dict
 
 from client import grade_analysis_with_llm
 
+def safe_score(score):
+    try:
+        score = float(score)
+    except:
+        return 0.5
+
+    if score <= 0.0:
+        return 0.01
+    if score >= 1.0:
+        return 0.99
+    return score
+
 def grade_easy(state: Dict[str, Any]) -> float:
     return 0.72
 
@@ -48,15 +60,6 @@ QUALITY_KEYWORDS: Dict[str, list[str]] = {
 def grade(state: Dict[str, Any]) -> float:
     """
     Rule-based grading: returns a score between 0.0 and 1.0.
-
-    Scoring per section:
-        - Present and ≥ MIN_LENGTH_GOOD chars  →  base 0.7
-        - Present and ≥ MIN_LENGTH_ACCEPTABLE   →  base 0.4
-        - Present but short                     →  base 0.2
-        - Empty / missing                       →  0.0
-        + keyword bonus up to 0.3 per section
-
-    Final score = weighted sum across sections.
     """
     idea = str(state.get("idea", ""))
     
@@ -70,7 +73,6 @@ def grade(state: Dict[str, Any]) -> float:
 
     alpha_chars = sum(c.isalpha() for c in idea)
     if alpha_chars < 15:
-        # Penalize if the input idea is largely just symbols or empty
         return 0.1
 
     analysis: Dict[str, str] = state.get("analysis", {})
@@ -81,7 +83,6 @@ def grade(state: Dict[str, Any]) -> float:
         if not text:
             continue
 
-        # Length-based base score -------------------------------------------
         length = len(text)
         if length >= MIN_LENGTH_GOOD:
             base = 0.7
@@ -90,11 +91,9 @@ def grade(state: Dict[str, Any]) -> float:
         else:
             base = 0.2
 
-        # Keyword bonus (up to 0.3) ----------------------------------------
         keywords = QUALITY_KEYWORDS.get(section, [])
         if keywords:
             hits = sum(1 for kw in keywords if kw.lower() in text.lower())
-            # Require more hits to get the full bonus point
             keyword_score = min(0.3, (hits / max(1, len(keywords) - 2)) * 0.3)
         else:
             keyword_score = 0.0
@@ -103,11 +102,7 @@ def grade(state: Dict[str, Any]) -> float:
         total += section_score * weight
 
     final_score = round(total, 4)
-    if final_score <= 0.1:
-        return 0.1
-    elif final_score >= 0.9:
-        return 0.9
-    return final_score
+    return safe_score(final_score)
 
 
 # ---------------------------------------------------------------------------
@@ -118,17 +113,6 @@ def grade(state: Dict[str, Any]) -> float:
 def grade_with_llm(state: Dict[str, Any]) -> Dict[str, Any]:
     """
     Use an LLM to produce a strict, structured score breakdown.
-
-    Returns a dict:
-        {
-            "problem": float,   # out of 0.3
-            "solution": float,  # out of 0.3
-            "market": float,    # out of 0.4
-            "final": float,     # total 0.0-1.0
-            "raw": str,         # raw LLM output
-        }
-
-    Requires ``OPENAI_API_KEY`` to be set.
     """
     idea = state.get("idea", "")
     analysis = state.get("analysis", {})
@@ -137,10 +121,7 @@ def grade_with_llm(state: Dict[str, Any]) -> Dict[str, Any]:
 def grade_with_llm_score(state: Dict[str, Any]) -> float:
     """
     OpenEnv-compliant wrapper for LLM-based grading.
-    Returns just the float final score.
     """
     result = grade_with_llm(state)
-    score = result.get("final", 0.1)
-    if score >= 0.9: return 0.9
-    if score <= 0.1: return 0.1
-    return float(score)
+    score = result.get("final", 0.5)
+    return safe_score(score)
