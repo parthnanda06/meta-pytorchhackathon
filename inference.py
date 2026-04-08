@@ -15,7 +15,8 @@ def safe_score(score):
 def run_single_task(idea):
     print("[START]")
 
-    env = StartupEnv(idea=idea, use_llm=False)
+    # CRITICAL: enabling LLM for Meta Hackathon proxy validation
+    env = StartupEnv(idea=idea, use_llm=True)
     agent = Agent(allowed_actions=[
         "analyze_problem",
         "analyze_solution",

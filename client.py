@@ -124,12 +124,13 @@ def generate_analysis(
         The generated analysis text (ending with a verdict line).
     """
     try:
-        api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-        model_name = os.getenv("MODEL_NAME", model)
-        api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
+        api_base_url = os.getenv("API_BASE_URL") or os.getenv("OPENAI_API_BASE") or "https://api.openai.com/v1"
+        model_name = os.getenv("MODEL_NAME") or os.getenv("LLM_MODEL") or model
+        api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY") or os.getenv("API_KEY")
 
         if not api_key:
-            raise ValueError("HF_TOKEN environment variable is required.")
+            # Fallback to a dummy key if running in an environment that expects requests but hasn't provided a key yet
+            api_key = "dummy-key-for-proxy"
 
         client = OpenAI(
             base_url=api_base_url,
@@ -179,12 +180,13 @@ def grade_analysis_with_llm(
         }
     """
     try:
-        api_base_url = os.getenv("API_BASE_URL", "https://api.openai.com/v1")
-        model_name = os.getenv("MODEL_NAME", model)
-        api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY")
+        api_base_url = os.getenv("API_BASE_URL") or os.getenv("OPENAI_API_BASE") or "https://api.openai.com/v1"
+        model_name = os.getenv("MODEL_NAME") or os.getenv("LLM_MODEL") or model
+        api_key = os.getenv("HF_TOKEN") or os.getenv("OPENAI_API_KEY") or os.getenv("API_KEY")
 
         if not api_key:
-            raise ValueError("HF_TOKEN environment variable is required.")
+            # Fallback to a dummy key if running in an environment that expects requests but hasn't provided a key yet
+            api_key = "dummy-key-for-proxy"
 
         client = OpenAI(
             base_url=api_base_url,
