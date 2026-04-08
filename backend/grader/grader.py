@@ -85,10 +85,10 @@ def grade(state: Dict[str, Any]) -> float:
         total += section_score * weight
 
     final_score = round(total, 4)
-    if final_score <= 0.0:
-        return 0.01
-    elif final_score >= 1.0:
-        return 0.99
+    if final_score <= 0.1:
+        return 0.1
+    elif final_score >= 0.9:
+        return 0.9
     return final_score
 
 
@@ -122,7 +122,7 @@ def grade_with_llm_score(state: Dict[str, Any]) -> float:
     Returns just the float final score.
     """
     result = grade_with_llm(state)
-    score = result.get("final", 0.01)
-    if score >= 1.0: return 0.99
-    if score <= 0.0: return 0.01
+    score = result.get("final", 0.1)
+    if score >= 0.9: return 0.9
+    if score <= 0.1: return 0.1
     return float(score)
