@@ -1,32 +1,63 @@
-import os
 from environment import StartupEnv
+from agent import Agent
 from grader import grade
 
-def main():
-    # Priority to IDEA env var if provided by validator
-    idea = os.getenv("IDEA") or "AI fitness startup"
 
+def safe_score(score):
+    score = float(score)
+    if score <= 0.0:
+        return 0.01
+    if score >= 1.0:
+        return 0.99
+    return score
+
+
+def run_single_task(idea):
     print("[START]")
 
     # CRITICAL: enabling LLM for Meta proxy validation
     env = StartupEnv(idea=idea, use_llm=True)
+    agent = Agent(allowed_actions=[
+        "analyze_problem",
+        "analyze_solution",
+        "analyze_market"
+    ])
+
     state = env.reset()
 
-    # Explicitly walk through the required analytical steps
-    for action in ["analyze_problem", "analyze_solution", "analyze_market"]:
+    while True:
+        action = agent.act(state)
+        if action is None:
+            break
+
         print(f"[STEP] {action}")
-        state, _, _ = env.step(action)
+        state, _, done = env.step(action)
+
+        if done:
+            break
 
     score = grade(state)
-
-    # STRICT clamp to (0, 1) exclusively
-    if score <= 0:
-        score = 0.01
-    elif score >= 1:
-        score = 0.99
+    score = safe_score(score)
 
     print(f"SCORE: {score:.4f}")
     print("[END]")
+
+    return score
+
+
+def main():
+    tasks = [
+        "AI fitness startup",
+        "Food delivery platform",
+        "Edtech app for students"
+    ]
+
+    results = []
+
+    for idea in tasks:
+        score = run_single_task(idea)
+        results.append(score)
+
 
 if __name__ == "__main__":
     main()
