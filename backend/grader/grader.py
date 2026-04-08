@@ -115,3 +115,14 @@ def grade_with_llm(state: Dict[str, Any]) -> Dict[str, Any]:
     idea = state.get("idea", "")
     analysis = state.get("analysis", {})
     return grade_analysis_with_llm(idea=idea, analysis=analysis)
+
+def grade_with_llm_score(state: Dict[str, Any]) -> float:
+    """
+    OpenEnv-compliant wrapper for LLM-based grading.
+    Returns just the float final score.
+    """
+    result = grade_with_llm(state)
+    score = result.get("final", 0.01)
+    if score >= 1.0: return 0.99
+    if score <= 0.0: return 0.01
+    return float(score)
