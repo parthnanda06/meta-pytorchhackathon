@@ -4,7 +4,7 @@ import json
 
 from environment import StartupEnv
 from agent import Agent
-from grader import grade
+from grader import grade, grade_easy, grade_medium, grade_hard
 from tasks import get_all_tasks
 from tasks import get_task
 
@@ -32,8 +32,13 @@ def main():
             if done:
                 break
                 
-        # Existing grader call
-        score = grade(state)
+        # Call the specific grader for the task
+        if task_data['id'] == "easy":
+            score = grade_easy(state)
+        elif task_data['id'] == "medium":
+            score = grade_medium(state)
+        else:
+            score = grade_hard(state)
         
         # Strictly clamp between (0, 1) exclusively
         score = max(0.01, min(0.99, score))

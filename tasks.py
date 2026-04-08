@@ -18,19 +18,19 @@ TASK_DEFINITIONS: Dict[str, Dict[str, Any]] = {
         "description": "Analyze the problem space only.",
         "actions": ["analyze_problem"],
         "max_reward": 1.0,
-        "graders": ["rule_based"],
+        "graders": ["grader_easy"],
     },
     "medium": {
         "description": "Analyze the problem space and proposed solution.",
         "actions": ["analyze_problem", "analyze_solution"],
         "max_reward": 1.0,
-        "graders": ["rule_based"],
+        "graders": ["grader_medium"],
     },
     "hard": {
         "description": "Full pipeline: problem, solution, and market analysis.",
         "actions": ["analyze_problem", "analyze_solution", "analyze_market"],
         "max_reward": 1.0,
-        "graders": ["rule_based"],
+        "graders": ["grader_hard"],
     },
 }
 

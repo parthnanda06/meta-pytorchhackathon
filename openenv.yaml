@@ -100,37 +100,39 @@ tasks:
     description: Analyze the problem space only.
     actions: [analyze_problem]
     max_reward: 1.0
-    graders: [rule_based]
+    graders: [grader_easy]
 
   - name: medium
     description: Analyze problem and solution.
     actions: [analyze_problem, analyze_solution]
     max_reward: 1.0
-    graders: [rule_based]
+    graders: [grader_medium]
 
   - name: hard
     description: Full pipeline — problem, solution, and market.
     actions: [analyze_problem, analyze_solution, analyze_market]
     max_reward: 1.0
-    graders: [rule_based]
+    graders: [grader_hard]
 
 # ──────────────────────────────────────────────────────────────────────────
 # Grading
 # ──────────────────────────────────────────────────────────────────────────
 
 grading:
-  rule_based:
+  grader_easy:
     module: grader
-    function: grade
-    description: Deterministic scoring based on completeness and keyword quality.
-    score_range: [0.1, 0.9]
+    function: grade_easy
+    score_range: [0, 1]
 
-  llm_based:
+  grader_medium:
     module: grader
-    function: grade_with_llm_score
-    description: LLM-based quality assessment (temperature=0).
-    score_range: [0.1, 0.9]
-    optional: true
+    function: grade_medium
+    score_range: [0, 1]
+
+  grader_hard:
+    module: grader
+    function: grade_hard
+    score_range: [0, 1]
 
 # ──────────────────────────────────────────────────────────────────────────
 # Agent
