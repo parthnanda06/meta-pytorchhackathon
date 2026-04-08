@@ -2,11 +2,11 @@ import sys
 import os
 import json
 
-from backend.env.environment import StartupEnv
-from backend.agent.agent import Agent
-from backend.grader.grader import grade
-from backend.tasks.tasks import get_all_tasks
-from backend.tasks.tasks import get_task
+from environment import StartupEnv
+from agent import Agent
+from grader import grade
+from tasks import get_all_tasks
+from tasks import get_task
 
 def main():
     tasks_list = get_all_tasks()

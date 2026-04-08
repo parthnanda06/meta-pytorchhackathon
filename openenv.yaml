@@ -12,7 +12,7 @@ description: >
 # ──────────────────────────────────────────────────────────────────────────
 
 environment:
-  class: backend.env.environment.StartupEnv
+  class: environment.StartupEnv
   init_params:
     idea:
       type: string
@@ -120,13 +120,13 @@ tasks:
 
 grading:
   rule_based:
-    module: backend.grader.grader
+    module: grader
     function: grade
     description: Deterministic scoring based on completeness and keyword quality.
     score_range: [0.1, 0.9]
 
   llm_based:
-    module: backend.grader.grader
+    module: grader
     function: grade_with_llm_score
     description: LLM-based quality assessment (temperature=0).
     score_range: [0.1, 0.9]
@@ -137,7 +137,7 @@ grading:
 # ──────────────────────────────────────────────────────────────────────────
 
 agent:
-  class: backend.agent.agent.Agent
+  class: agent.Agent
   deterministic: true
   description: >
     Selects actions sequentially based on missing state fields:

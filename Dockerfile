@@ -16,9 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy project source
 COPY . .
 
-# Ensure root is in PYTHONPATH for absolute imports
+# Ensure root is in PYTHONPATH
 ENV PYTHONPATH="/app"
 
 # Default command to run the web UI for Hugging Face Spaces
 EXPOSE 7860
-CMD ["python", "backend/app.py"]
+CMD ["python", "app.py"]
