@@ -59,3 +59,25 @@ def get_task(difficulty: str) -> Dict[str, Any]:
         valid = ", ".join(TASK_DEFINITIONS.keys())
         raise ValueError(f"Unknown difficulty '{difficulty}'. Choose from: {valid}")
     return TASK_DEFINITIONS[difficulty]
+
+def get_all_tasks() -> List[Dict[str, Any]]:
+    """
+    Return a list of diverse startup ideas as required for the evaluation pipeline.
+    """
+    return [
+        {
+            "id": "task_1",
+            "idea": "An AI-powered SaaS platform that helps local bakeries predict daily demand for perishable goods using weather and local event data.",
+            "difficulty": "easy"
+        },
+        {
+            "id": "task_2",
+            "idea": "A mobile application that tracks user's carbon footprint based on their bank transactions and offers marketplace rewards for sustainable purchases.",
+            "difficulty": "medium"
+        },
+        {
+            "id": "task_3",
+            "idea": "A hardware startup building autonomous micro-drones for evaluating roof damage after severe storms, marketed directly to local insurance claim adjusters.",
+            "difficulty": "hard"
+        }
+    ]
