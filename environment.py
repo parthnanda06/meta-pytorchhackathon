@@ -26,7 +26,7 @@ VALID_ACTIONS = ("analyze_problem", "analyze_solution", "analyze_market")
 REWARD_MAP: Dict[str, float] = {
     "analyze_problem": 0.3,
     "analyze_solution": 0.3,
-    "analyze_market": 0.4,
+    "analyze_market": 0.3,
 }
 
 ANALYSIS_KEY_MAP: Dict[str, str] = {
@@ -133,6 +133,9 @@ class StartupEnv:
         # Compute reward ----------------------------------------------------
         reward = REWARD_MAP[action]
         self._cumulative_reward += reward
+        
+        # STRICT clamp: Ensure cumulative reward stays strictly between (0, 1)
+        self._cumulative_reward = min(0.95, max(0.05, self._cumulative_reward))
 
         # Check termination -------------------------------------------------
         analysis = self._state["analysis"]

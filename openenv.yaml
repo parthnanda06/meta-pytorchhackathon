@@ -85,11 +85,11 @@ observations:
 
 rewards:
   type: partial
-  total: 1.0
+  total: 0.9
   breakdown:
     analyze_problem: 0.3
     analyze_solution: 0.3
-    analyze_market: 0.4
+    analyze_market: 0.3
 
 # ──────────────────────────────────────────────────────────────────────────
 # Tasks (difficulty levels)
