@@ -2,6 +2,7 @@ from environment import StartupEnv
 from agent import Agent
 from grader import grade
 
+
 def safe_score(score):
     score = float(score)
     if score <= 0.0:
@@ -11,42 +12,51 @@ def safe_score(score):
     return score
 
 
+def run_single_task(idea):
+    print("[START]")
+
+    env = StartupEnv(idea=idea, use_llm=False)
+    agent = Agent(allowed_actions=[
+        "analyze_problem",
+        "analyze_solution",
+        "analyze_market"
+    ])
+
+    state = env.reset()
+
+    while True:
+        action = agent.act(state)
+        if action is None:
+            break
+
+        print(f"[STEP] {action}")
+        state, _, done = env.step(action)
+
+        if done:
+            break
+
+    score = grade(state)
+    score = safe_score(score)
+
+    print(f"SCORE: {score:.4f}")
+    print("[END]")
+
+    return score
+
+
 def main():
     tasks = [
-        {"idea": "AI fitness startup"},
-        {"idea": "Food delivery platform"},
-        {"idea": "Edtech app for students"}
+        "AI fitness startup",
+        "Food delivery platform",
+        "Edtech app for students"
     ]
 
     results = []
 
-    for t in tasks:
-        env = StartupEnv(idea=t["idea"], use_llm=False)
-        agent = Agent(allowed_actions=[
-            "analyze_problem",
-            "analyze_solution",
-            "analyze_market"
-        ])
+    for idea in tasks:
+        score = run_single_task(idea)
+        results.append(score)
 
-        state = env.reset()
-
-        while True:
-            action = agent.act(state)
-            if action is None:
-                break
-            state, _, done = env.step(action)
-            if done:
-                break
-
-        score = grade(state)
-        score = safe_score(score)
-
-        results.append({
-            "task": t["idea"],
-            "score": score
-        })
-
-    print(results)
 
 if __name__ == "__main__":
     main()
