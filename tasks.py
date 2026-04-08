@@ -66,18 +66,18 @@ def get_all_tasks() -> List[Dict[str, Any]]:
     """
     return [
         {
-            "id": "easy",
-            "idea": "An AI-powered SaaS platform that helps local bakeries predict daily demand for perishable goods using weather and local event data.",
+            "id": "AI fitness startup",
+            "idea": "An AI-powered personal trainer that uses computer vision to correct exercise form in real-time.",
             "difficulty": "easy"
         },
         {
-            "id": "medium",
-            "idea": "A mobile application that tracks user's carbon footprint based on their bank transactions and offers marketplace rewards for sustainable purchases.",
+            "id": "Food delivery platform",
+            "idea": "A hyperlocal food delivery service focused exclusively on home-cooked meals from verified local chefs.",
             "difficulty": "medium"
         },
         {
-            "id": "hard",
-            "idea": "A hardware startup building autonomous micro-drones for evaluating roof damage after severe storms, marketed directly to local insurance claim adjusters.",
+            "id": "Edtech app for students",
+            "idea": "A gamified learning platform that helps medical students memorize complex anatomy using 3D AR models.",
             "difficulty": "hard"
         }
     ]

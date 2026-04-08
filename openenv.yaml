@@ -96,19 +96,19 @@ rewards:
 # ──────────────────────────────────────────────────────────────────────────
 
 tasks:
-  - name: easy
+  - name: AI fitness startup
     description: Analyze the problem space only.
     actions: [analyze_problem]
     max_reward: 1.0
     graders: [grader_easy]
 
-  - name: medium
+  - name: Food delivery platform
     description: Analyze problem and solution.
     actions: [analyze_problem, analyze_solution]
     max_reward: 1.0
     graders: [grader_medium]
 
-  - name: hard
+  - name: Edtech app for students
     description: Full pipeline — problem, solution, and market.
     actions: [analyze_problem, analyze_solution, analyze_market]
     max_reward: 1.0

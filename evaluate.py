@@ -33,9 +33,9 @@ def main():
                 break
                 
         # Call the specific grader for the task
-        if task_data['id'] == "easy":
+        if task_data['id'] == "AI fitness startup":
             score = grade_easy(state)
-        elif task_data['id'] == "medium":
+        elif task_data['id'] == "Food delivery platform":
             score = grade_medium(state)
         else:
             score = grade_hard(state)
