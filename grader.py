@@ -107,12 +107,14 @@ def grade_with_llm(state: Dict[str, Any]) -> Dict[str, Any]:
     return grade_analysis_with_llm(idea=idea, analysis=analysis)
 
 def grade_with_llm_score(state: Dict[str, Any]) -> float:
-    """
-    OpenEnv-compliant wrapper for LLM-based grading.
-    """
-    result = grade_with_llm(state)
-    score = result.get("final", 0.5)
-    return safe_score(score)
+    try:
+        result = grade_with_llm(state)
+        score = result.get("final", 0.5)
+    except Exception:
+        score = 0.5
+
+    # HARD clamp + safety
+    return max(0.05, min(0.95, float(score)))
 
 # Optional difficulty-specific entry points if required by YAML.
 def grade_easy(state: Dict[str, Any]) -> float:
