@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 # Append 'backend' to sys.path so modules inside it (env, llm, agent, grader) can resolve
 sys.path.append(os.path.join(os.path.dirname(__file__), "backend"))
@@ -10,69 +11,43 @@ from grader.grader import grade
 from tasks.tasks import get_all_tasks
 
 def main():
-    print("="*60)
-    print("🚀 Starting Meta PyTorch Hackathon Evaluation Pipeline")
-    print("="*60)
-
-    # 1. Fetch all tasks
     tasks_list = get_all_tasks()
-    print(f"Loaded {len(tasks_list)} tasks for evaluation.\n")
-
     results = []
 
-    # 2. Iterate over all tasks
-    for i, task_data in enumerate(tasks_list):
-        print(f"--- Task {i+1}: {task_data['id']} ({task_data['difficulty'].upper()}) ---")
+    for task_data in tasks_list:
         idea = task_data['idea']
-        print(f"Idea: {idea}")
         
-        # 3. Run the environment
-        # use_llm=False to run deterministically and quickly without relying on external APIs
-        # which easily guarantees perfect evaluation runs.
+        # Run environment offline (deterministically) 
         env = StartupEnv(idea=idea, use_llm=False)
         state = env.reset()
+        
         from tasks.tasks import get_task
         task_def = get_task(task_data['difficulty'])
         
-        # 4. Use the Agent to complete all steps
+        # Agent automates the evaluation pipeline based on difficulty constraints
         agent = Agent(allowed_actions=task_def.get("actions"))
         
-        step_count = 0
         while True:
             action = agent.act(state)
             if not action:
-                # Agent has finished or no more actions
                 break
-                
             state, reward, done = env.step(action)
-            step_count += 1
-            
             if done:
                 break
                 
-        # 5. Call the existing grade(state) function
+        # Existing grader call
         score = grade(state)
         
-        # Ensure it is strictly within (0, 1) to pass criteria
+        # Strictly clamp between (0, 1) exclusively
         score = max(0.01, min(0.99, score))
         
-        print(f"[Done] Steps executed: {step_count}")
-        print(f"[Score] {score:.4f}")
-        print("-" * 60)
-        
         results.append({
-            "id": task_data['id'],
-            "score": score
+            "task": task_data['id'],
+            "score": round(score, 4)
         })
 
-    # 6. Collect and print scores clearly
-    print("\n" + "="*60)
-    print("🏆 FINAL EVALUATION RESULTS")
-    print("="*60)
-    for res in results:
-        print(f"Task {res['id']}: Score {res['score']:.4f}")
-    
-    print("\n✅ Evaluation successfully passed. All scores strictly within (0, 1).")
+    # Exactly output pure JSON formatted array for platform regex parsers
+    print(json.dumps(results, indent=2))
 
 if __name__ == "__main__":
     main()
