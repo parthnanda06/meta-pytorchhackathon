@@ -26,7 +26,7 @@ VALID_ACTIONS = ("analyze_problem", "analyze_solution", "analyze_market")
 REWARD_MAP: Dict[str, float] = {
     "analyze_problem": 0.3,
     "analyze_solution": 0.3,
-    "analyze_market": 0.3,
+    "analyze_market": 0.4,
 }
 
 ANALYSIS_KEY_MAP: Dict[str, str] = {
