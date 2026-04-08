@@ -13,10 +13,10 @@ from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 load_dotenv()
 
-from env.environment import StartupEnv
-from agent.agent import Agent
-from grader.grader import grade, grade_with_llm
-from tasks.tasks import get_task
+from backend.env.environment import StartupEnv
+from backend.agent.agent import Agent
+from backend.grader.grader import grade, grade_with_llm
+from backend.tasks.tasks import get_task
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 

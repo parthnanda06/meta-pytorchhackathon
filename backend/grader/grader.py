@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from llm.client import grade_analysis_with_llm
+from backend.llm.client import grade_analysis_with_llm
 
 
 # ---------------------------------------------------------------------------
@@ -25,7 +25,7 @@ MIN_LENGTH_ACCEPTABLE = 150
 SECTION_WEIGHTS: Dict[str, float] = {
     "problem": 0.3,
     "solution": 0.3,
-    "market": 0.39,
+    "market": 0.4,
 }
 
 # Quality keywords per section (presence → bonus).

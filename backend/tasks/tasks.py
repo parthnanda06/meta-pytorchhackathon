@@ -29,7 +29,7 @@ TASK_DEFINITIONS: Dict[str, Dict[str, Any]] = {
     "hard": {
         "description": "Full pipeline: problem, solution, and market analysis.",
         "actions": ["analyze_problem", "analyze_solution", "analyze_market"],
-        "max_reward": 0.99,
+        "max_reward": 1.0,
         "graders": ["rule_based"],
     },
 }

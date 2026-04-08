@@ -2,13 +2,11 @@ import sys
 import os
 import json
 
-# Append 'backend' to sys.path so modules inside it (env, llm, agent, grader) can resolve
-sys.path.append(os.path.join(os.path.dirname(__file__), "backend"))
-
-from env.environment import StartupEnv
-from agent.agent import Agent
-from grader.grader import grade
-from tasks.tasks import get_all_tasks
+from backend.env.environment import StartupEnv
+from backend.agent.agent import Agent
+from backend.grader.grader import grade
+from backend.tasks.tasks import get_all_tasks
+from backend.tasks.tasks import get_task
 
 def main():
     tasks_list = get_all_tasks()
@@ -21,7 +19,6 @@ def main():
         env = StartupEnv(idea=idea, use_llm=False)
         state = env.reset()
         
-        from tasks.tasks import get_task
         task_def = get_task(task_data['difficulty'])
         
         # Agent automates the evaluation pipeline based on difficulty constraints

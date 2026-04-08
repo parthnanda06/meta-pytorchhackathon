@@ -15,7 +15,7 @@ import copy
 from dataclasses import dataclass, field
 from typing import Any, Dict, Literal, Optional, Tuple
 
-from llm.client import generate_analysis
+from backend.llm.client import generate_analysis
 
 # ---------------------------------------------------------------------------
 # Constants
