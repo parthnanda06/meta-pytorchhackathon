@@ -49,17 +49,8 @@ def run_single_task(idea):
 
 
 def main():
-    tasks = [
-        "AI fitness startup",
-        "Food delivery platform",
-        "Edtech app for students"
-    ]
-
-    results = []
-
-    for idea in tasks:
-        score = run_single_task(idea)
-        results.append(score)
+    idea = "AI fitness startup"
+    run_single_task(idea)
 
 
 if __name__ == "__main__":
