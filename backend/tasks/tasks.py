@@ -29,7 +29,7 @@ TASK_DEFINITIONS: Dict[str, Dict[str, Any]] = {
     "hard": {
         "description": "Full pipeline: problem, solution, and market analysis.",
         "actions": ["analyze_problem", "analyze_solution", "analyze_market"],
-        "max_reward": 1.0,
+        "max_reward": 0.9,
         "graders": ["rule_based"],
     },
 }
@@ -66,17 +66,17 @@ def get_all_tasks() -> List[Dict[str, Any]]:
     """
     return [
         {
-            "id": "task_1",
+            "id": "easy",
             "idea": "An AI-powered SaaS platform that helps local bakeries predict daily demand for perishable goods using weather and local event data.",
             "difficulty": "easy"
         },
         {
-            "id": "task_2",
+            "id": "medium",
             "idea": "A mobile application that tracks user's carbon footprint based on their bank transactions and offers marketplace rewards for sustainable purchases.",
             "difficulty": "medium"
         },
         {
-            "id": "task_3",
+            "id": "hard",
             "idea": "A hardware startup building autonomous micro-drones for evaluating roof damage after severe storms, marketed directly to local insurance claim adjusters.",
             "difficulty": "hard"
         }
