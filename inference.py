@@ -4,12 +4,15 @@ from grader import grade
 
 
 def safe_score(score):
-    score = float(score)
+    try:
+        score = float(score)
+    except:
+        return 0.5
     if score <= 0.0:
-        return 0.01
+        return 0.05
     if score >= 1.0:
-        return 0.99
-    return score
+        return 0.95
+    return max(0.05, min(0.95, score))
 
 
 def run_single_task(idea):
