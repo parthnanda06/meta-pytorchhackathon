@@ -12,7 +12,7 @@ description: >
 # ──────────────────────────────────────────────────────────────────────────
 
 environment:
-  class: environment.StartupEnv
+  class: backend.environment.StartupEnv
   init_params:
     idea:
       type: string

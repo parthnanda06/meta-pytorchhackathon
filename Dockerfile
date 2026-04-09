@@ -21,4 +21,4 @@ ENV PYTHONPATH="/app"
 
 # Default command to run the web UI for Hugging Face Spaces
 EXPOSE 7860
-CMD ["python", "app.py"]
+CMD ["python", "backend/app.py"]

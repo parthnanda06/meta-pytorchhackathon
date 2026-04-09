@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from client import grade_analysis_with_llm
+from .client import grade_analysis_with_llm
 
 def safe_score(score: Any) -> float:
     """Guarantee a score strictly between 0.05 and 0.95."""

@@ -1,6 +1,6 @@
-from environment import StartupEnv
-from agent import Agent
-from grader import grade
+from backend.environment import StartupEnv
+from backend.agent import Agent
+from backend.grader import grade
 
 
 def safe_score(score):

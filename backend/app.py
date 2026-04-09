@@ -13,12 +13,12 @@ from flask import Flask, render_template, request, jsonify
 from dotenv import load_dotenv
 load_dotenv()
 
-from environment import StartupEnv
-from agent import Agent
-from grader import grade, grade_with_llm
-from tasks import get_task
+from .environment import StartupEnv
+from .agent import Agent
+from .grader import grade, grade_with_llm
+from .tasks import get_task
 
-app = Flask(__name__, template_folder='frontend', static_folder='frontend')
+app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
 
 # Store active sessions in memory (for simplicity)
 sessions: dict = {}
