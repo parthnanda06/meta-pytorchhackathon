@@ -85,7 +85,7 @@ observations:
 
 rewards:
   type: partial
-  total: 0.9
+  total: 1.0
   breakdown:
     analyze_problem: 0.3
     analyze_solution: 0.3
@@ -99,19 +99,19 @@ tasks:
   - name: AI fitness startup
     description: Analyze the problem space only.
     actions: [analyze_problem]
-    max_reward: 1.0
+    max_reward: 0.95
     graders: [grader_easy]
 
   - name: Food delivery platform
     description: Analyze problem and solution.
     actions: [analyze_problem, analyze_solution]
-    max_reward: 1.0
+    max_reward: 0.95
     graders: [grader_medium]
 
   - name: Edtech app for students
     description: Full pipeline — problem, solution, and market.
     actions: [analyze_problem, analyze_solution, analyze_market]
-    max_reward: 1.0
+    max_reward: 0.95
     graders: [grader_hard]
 
 # ──────────────────────────────────────────────────────────────────────────
@@ -120,26 +120,26 @@ tasks:
 
 grading:
   grader_easy:
-    module: grader
+    module: backend.grader
     function: grade_easy
-    score_range: [0, 1]
+    score_range: [0.05, 0.95]
 
   grader_medium:
-    module: grader
+    module: backend.grader
     function: grade_medium
-    score_range: [0, 1]
+    score_range: [0.05, 0.95]
 
   grader_hard:
-    module: grader
+    module: backend.grader
     function: grade_hard
-    score_range: [0, 1]
+    score_range: [0.05, 0.95]
 
 # ──────────────────────────────────────────────────────────────────────────
 # Agent
 # ──────────────────────────────────────────────────────────────────────────
 
 agent:
-  class: agent.Agent
+  class: backend.agent.Agent
   deterministic: true
   description: >
     Selects actions sequentially based on missing state fields:
