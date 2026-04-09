@@ -17,6 +17,9 @@ def safe_score(score):
 
 
 def run_single_task(idea):
+    print("[START]")
+    print(f"TASK: {idea}")
+
     env = StartupEnv(idea=idea, use_llm=True)
     agent = Agent(allowed_actions=[
         "analyze_problem",
@@ -30,12 +33,20 @@ def run_single_task(idea):
         action = agent.act(state)
         if action is None:
             break
+
+        print(f"[STEP] {action}")
         state, _, done = env.step(action)
+
         if done:
             break
 
     score = grade(state)
-    return safe_score(score)
+    score = safe_score(score)
+
+    print(f"SCORE: {score:.4f}")
+    print("[END]")
+
+    return score
 
 
 def main():
@@ -54,8 +65,8 @@ def main():
             "score": score
         })
 
-    # Output the exact JSON format the validator expects
-    print(json.dumps(results))
+    # Keep the JSON summary at the very end as well, just in case.
+    # print(json.dumps(results))
 
 
 if __name__ == "__main__":
