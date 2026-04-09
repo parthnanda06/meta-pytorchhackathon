@@ -1,3 +1,4 @@
+import json
 from backend.environment import StartupEnv
 from backend.agent import Agent
 from backend.grader import grade
@@ -16,9 +17,6 @@ def safe_score(score):
 
 
 def run_single_task(idea):
-    print("[START]")
-
-    # CRITICAL: enabling LLM for Meta proxy validation
     env = StartupEnv(idea=idea, use_llm=True)
     agent = Agent(allowed_actions=[
         "analyze_problem",
@@ -32,25 +30,32 @@ def run_single_task(idea):
         action = agent.act(state)
         if action is None:
             break
-
-        print(f"[STEP] {action}")
         state, _, done = env.step(action)
-
         if done:
             break
 
     score = grade(state)
-    score = safe_score(score)
-
-    print(f"SCORE: {score:.4f}")
-    print("[END]")
-
-    return score
+    return safe_score(score)
 
 
 def main():
-    idea = "AI fitness startup"
-    run_single_task(idea)
+    tasks = [
+        "AI fitness startup",
+        "Food delivery platform",
+        "Edtech app for students"
+    ]
+
+    results = []
+
+    for idea in tasks:
+        score = run_single_task(idea)
+        results.append({
+            "task": idea,
+            "score": score
+        })
+
+    # Output the exact JSON format the validator expects
+    print(json.dumps(results))
 
 
 if __name__ == "__main__":
