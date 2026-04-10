@@ -10,18 +10,19 @@ from typing import Any, Dict
 
 from .client import grade_analysis_with_llm
 
-def safe_score(score: Any) -> float:
-    """Guarantee a score strictly between 0.001 and 0.999."""
+def safe_score(score):
     try:
         score = float(score)
-    except (ValueError, TypeError):
+    except:
         return 0.5
-    
-    if score <= 0.0:
-        return 0.001
-    if score >= 1.0:
-        return 0.999
-    return max(0.001, min(0.999, score))
+
+    # HARD SAFE ZONE (avoid boundaries completely)
+    if score <= 0.1:
+        return 0.15
+    if score >= 0.9:
+        return 0.85
+
+    return round(score, 3)
 
 
 # ---------------------------------------------------------------------------
@@ -84,12 +85,6 @@ def grade(state: Dict[str, Any]) -> float:
 
     # Final hard clamping and precision rounding.
     final_score = round(total, 4)
-    
-    if final_score <= 0.0:
-        final_score = 0.001
-    elif final_score >= 1.0:
-        final_score = 0.999
-        
     return safe_score(final_score)
 
 

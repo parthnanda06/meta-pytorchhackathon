@@ -7,15 +7,17 @@ from backend.grader import grade
 
 def safe_score(score):
     try:
-        score = float(score or 0.5)
-    except (TypeError, ValueError):
+        score = float(score)
+    except:
         return 0.5
-    
-    if score <= 0.0:
-        return 0.001
-    if score >= 1.0:
-        return 0.999
-    return float(max(0.001, min(0.999, score)))
+
+    # HARD SAFE ZONE (avoid boundaries completely)
+    if score <= 0.1:
+        return 0.15
+    if score >= 0.9:
+        return 0.85
+
+    return round(score, 3)
 
 
 def run_single_task(idea):
