@@ -15,7 +15,7 @@ load_dotenv()
 
 from .environment import StartupEnv
 from .agent import Agent
-from .grader import grade, grade_with_llm
+from .grader import grade, grade_with_llm_score
 from .tasks import get_task
 
 app = Flask(__name__, template_folder='../frontend', static_folder='../frontend')
@@ -141,7 +141,7 @@ def run_llm_grade():
     env = session["env"]
 
     try:
-        result = grade_with_llm(env.state())
+        result = grade_with_llm_score(env.state())
         return jsonify({"llm_grade": result})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
