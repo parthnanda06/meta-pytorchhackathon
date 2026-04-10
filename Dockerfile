@@ -19,8 +19,8 @@ COPY . .
 # Ensure root is in PYTHONPATH
 ENV PYTHONPATH="/app"
 
-# Clean up web-related artifacts to prevent accidental Flask launches
-RUN rm -rf server backend/app.py frontend
+# Ensure run script is executable
+RUN chmod +x run.sh
 
-# Run the inference script directly for the validator to read stdout
-CMD ["python", "inference.py"]
+# Run the startup script
+CMD ["./run.sh"]
