@@ -24,9 +24,9 @@ from .client import generate_analysis
 VALID_ACTIONS = ("analyze_problem", "analyze_solution", "analyze_market")
 
 REWARD_MAP: Dict[str, float] = {
-    "analyze_problem": 0.3,
-    "analyze_solution": 0.3,
-    "analyze_market": 0.3,
+    "analyze_problem": 0.2,
+    "analyze_solution": 0.2,
+    "analyze_market": 0.2,
 }
 
 ANALYSIS_KEY_MAP: Dict[str, str] = {
@@ -133,9 +133,9 @@ class StartupEnv:
         # Compute reward ----------------------------------------------------
         reward = REWARD_MAP[action]
         self._cumulative_reward += reward
-        
-        # STRICT clamp: Ensure cumulative reward stays strictly between (0, 1)
-        self._cumulative_reward = min(0.999, max(0.001, self._cumulative_reward))
+
+        # HARD clamp to avoid 0 or 1
+        self._cumulative_reward = max(0.1, min(0.9, self._cumulative_reward))
 
         # Check termination -------------------------------------------------
         analysis = self._state["analysis"]

@@ -46,15 +46,15 @@ environment:
 actions:
   - name: analyze_problem
     description: Perform problem-space analysis for the startup idea.
-    reward: 0.3
+    reward: 0.2
 
   - name: analyze_solution
     description: Analyze the proposed solution and its differentiation.
-    reward: 0.3
+    reward: 0.2
 
   - name: analyze_market
     description: Evaluate the market opportunity, TAM, competition.
-    reward: 0.3
+    reward: 0.2
 
 # ──────────────────────────────────────────────────────────────────────────
 # Observation / State schema
@@ -85,11 +85,11 @@ observations:
 
 rewards:
   type: partial
-  total: 1.0
+  total: 0.6
   breakdown:
-    analyze_problem: 0.3
-    analyze_solution: 0.3
-    analyze_market: 0.3
+    analyze_problem: 0.2
+    analyze_solution: 0.2
+    analyze_market: 0.2
 
 # ──────────────────────────────────────────────────────────────────────────
 # Tasks (difficulty levels)
@@ -99,19 +99,19 @@ tasks:
   - name: AI fitness startup
     description: Analyze the problem space only.
     actions: [analyze_problem]
-    max_reward: 0.95
+    max_reward: 0.6
     graders: [grader_easy]
 
   - name: Food delivery platform
     description: Analyze problem and solution.
     actions: [analyze_problem, analyze_solution]
-    max_reward: 0.95
+    max_reward: 0.6
     graders: [grader_medium]
 
   - name: Edtech app for students
     description: Full pipeline — problem, solution, and market.
     actions: [analyze_problem, analyze_solution, analyze_market]
-    max_reward: 0.95
+    max_reward: 0.6
     graders: [grader_hard]
 
 # ──────────────────────────────────────────────────────────────────────────
