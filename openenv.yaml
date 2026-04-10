@@ -122,17 +122,17 @@ grading:
   grader_easy:
     module: backend.grader
     function: grade_easy
-    score_range: [0.05, 0.95]
+    score_range: [0.001, 0.999]
 
   grader_medium:
     module: backend.grader
     function: grade_medium
-    score_range: [0.05, 0.95]
+    score_range: [0.001, 0.999]
 
   grader_hard:
     module: backend.grader
     function: grade_hard
-    score_range: [0.05, 0.95]
+    score_range: [0.001, 0.999]
 
 # ──────────────────────────────────────────────────────────────────────────
 # Agent

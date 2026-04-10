@@ -135,7 +135,7 @@ class StartupEnv:
         self._cumulative_reward += reward
         
         # STRICT clamp: Ensure cumulative reward stays strictly between (0, 1)
-        self._cumulative_reward = min(0.95, max(0.05, self._cumulative_reward))
+        self._cumulative_reward = min(0.999, max(0.001, self._cumulative_reward))
 
         # Check termination -------------------------------------------------
         analysis = self._state["analysis"]

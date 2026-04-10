@@ -1,7 +1,7 @@
 """
 Grading module — scores the completeness and quality of a startup analysis.
 
-Deterministic, rule-based scoring with strict boundary safety [0.05, 0.95].
+Deterministic, rule-based scoring with strict boundary safety [0.001, 0.999].
 """
 
 from __future__ import annotations
@@ -11,17 +11,17 @@ from typing import Any, Dict
 from .client import grade_analysis_with_llm
 
 def safe_score(score: Any) -> float:
-    """Guarantee a score strictly between 0.05 and 0.95."""
+    """Guarantee a score strictly between 0.001 and 0.999."""
     try:
         score = float(score)
     except (ValueError, TypeError):
         return 0.5
     
     if score <= 0.0:
-        return 0.05
+        return 0.001
     if score >= 1.0:
-        return 0.95
-    return max(0.05, min(0.95, score))
+        return 0.999
+    return max(0.001, min(0.999, score))
 
 
 # ---------------------------------------------------------------------------
@@ -86,9 +86,9 @@ def grade(state: Dict[str, Any]) -> float:
     final_score = round(total, 4)
     
     if final_score <= 0.0:
-        final_score = 0.05
+        final_score = 0.001
     elif final_score >= 1.0:
-        final_score = 0.95
+        final_score = 0.999
         
     return safe_score(final_score)
 
@@ -114,7 +114,7 @@ def grade_with_llm_score(state: Dict[str, Any]) -> float:
         score = 0.5
 
     # HARD clamp + safety
-    return max(0.05, min(0.95, float(score)))
+    return float(max(0.001, min(0.999, float(score))))
 
 # Optional difficulty-specific entry points if required by YAML.
 def grade_easy(state: Dict[str, Any]) -> float:
