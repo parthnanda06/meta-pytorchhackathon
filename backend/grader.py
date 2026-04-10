@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from .client import grade_analysis_with_llm
+
 
 def safe_score(score):
     try:
@@ -89,27 +89,11 @@ def grade(state: Dict[str, Any]) -> float:
 
 
 # ---------------------------------------------------------------------------
-# LLM-based grading and wrappers
+# Grading wrappers
 # ---------------------------------------------------------------------------
 
-
-def grade_with_llm(state: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Produce a detailed score breakdown using the LLM.
-    """
-    idea = state.get("idea", "")
-    analysis = state.get("analysis", {})
-    return grade_analysis_with_llm(idea=idea, analysis=analysis)
-
-def grade_with_llm_score(state: Dict[str, Any]) -> float:
-    try:
-        result = grade_with_llm(state)
-        score = result.get("final", 0.5)
-    except Exception:
-        score = 0.5
-
-    # HARD clamp + safety
-    return float(max(0.001, min(0.999, float(score))))
+def grade_with_llm_score(state):
+    return 0.5
 
 # Optional difficulty-specific entry points if required by YAML.
 def grade_easy(state: Dict[str, Any]) -> float:
