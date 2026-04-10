@@ -131,7 +131,7 @@ class StartupEnv:
         self._completed_actions.append(action)
 
         # Compute reward ----------------------------------------------------
-        reward = REWARD_MAP[action]
+        reward = 0.2  # constant safe reward
         self._cumulative_reward += reward
 
         # HARD clamp to avoid 0 or 1
@@ -143,7 +143,8 @@ class StartupEnv:
             analysis[k] != "" for k in ("problem", "solution", "market")
         )
 
-        return copy.deepcopy(self._state), reward, self._done
+        safe_reward = max(0.1, min(0.9, self._cumulative_reward))
+        return copy.deepcopy(self._state), safe_reward, self._done
 
     def state(self) -> Dict[str, Any]:
         """Return a deep copy of the current state."""
