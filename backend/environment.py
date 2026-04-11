@@ -24,9 +24,9 @@ from .client import generate_analysis
 VALID_ACTIONS = ("analyze_problem", "analyze_solution", "analyze_market")
 
 REWARD_MAP: Dict[str, float] = {
-    "analyze_problem": 0.2,
-    "analyze_solution": 0.2,
-    "analyze_market": 0.2,
+    "analyze_problem": 0.33,
+    "analyze_solution": 0.33,
+    "analyze_market": 0.34,
 }
 
 ANALYSIS_KEY_MAP: Dict[str, str] = {
@@ -92,16 +92,9 @@ class StartupEnv:
         state : dict
             The updated environment state.
         reward : float
-            The reward earned by this action.
+            The incremental reward earned by this action.
         done : bool
             Whether the episode is complete (all analyses filled).
-
-        Raises
-        ------
-        RuntimeError
-            If the environment has not been reset or the episode is already done.
-        ValueError
-            If the action is invalid or has already been performed.
         """
         if not self._state:
             raise RuntimeError("Environment not initialised. Call reset() first.")
@@ -131,11 +124,8 @@ class StartupEnv:
         self._completed_actions.append(action)
 
         # Compute reward ----------------------------------------------------
-        reward = 0.2  # constant safe reward
+        reward = REWARD_MAP.get(action, 0.0)
         self._cumulative_reward += reward
-
-        # HARD clamp to avoid 0 or 1
-        self._cumulative_reward = max(0.1, min(0.9, self._cumulative_reward))
 
         # Check termination -------------------------------------------------
         analysis = self._state["analysis"]
@@ -143,8 +133,7 @@ class StartupEnv:
             analysis[k] != "" for k in ("problem", "solution", "market")
         )
 
-        safe_reward = max(0.1, min(0.9, self._cumulative_reward))
-        return copy.deepcopy(self._state), safe_reward, self._done
+        return copy.deepcopy(self._state), reward, self._done
 
     def state(self) -> Dict[str, Any]:
         """Return a deep copy of the current state."""
