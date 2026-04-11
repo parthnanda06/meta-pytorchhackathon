@@ -2,22 +2,7 @@ import json
 import sys
 from backend.environment import StartupEnv
 from backend.agent import Agent
-from backend.grader import grade
-
-
-def safe_score(score):
-    try:
-        score = float(score)
-    except:
-        return 0.5
-
-    # HARD SAFE ZONE (avoid boundaries completely)
-    if score <= 0.1:
-        return 0.15
-    if score >= 0.9:
-        return 0.85
-
-    return round(score, 3)
+from backend.grader import grade, safe_score
 
 
 def run_single_task(idea):
