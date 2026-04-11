@@ -46,10 +46,9 @@ def run_single_task(idea):
         print(f"Error during episode: {e}")
         score = 0.5
     finally:
-        # Always emit [END] even on crash
-        # Format: [END] success=True, steps=3, score=0.720, rewards=0.30,0.30,0.30
-        rewards_str = ",".join(f"{r:.2f}" for r in rewards)
-        print(f"[END] success={success}, steps={steps}, score={score:.3f}, rewards={rewards_str}")
+        # Paranoid clamping before final emission
+        final_score = max(0.01, min(0.99, float(score)))
+        print(f"[END] task={idea} score={final_score:.2f} steps={steps}", flush=True)
 
     return score
 
