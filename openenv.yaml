@@ -1,11 +1,15 @@
 # OpenEnv specification for the Startup Idea Validator environment.
 # See: https://github.com/openenv/openenv-spec
 
+spec_version: 1
 name: startup-idea-validator
 version: "1.0.0"
 description: >
   An OpenEnv-compliant AI environment that evaluates startup ideas through
   step-based analysis of problem, solution, and market dimensions.
+
+# Entry point for the Flask application
+app: server.app:app
 
 # ──────────────────────────────────────────────────────────────────────────
 # Environment interface
@@ -92,47 +96,33 @@ rewards:
     analyze_market: 0.34
 
 # ──────────────────────────────────────────────────────────────────────────
-# Tasks (difficulty levels)
+# Tasks
 # ──────────────────────────────────────────────────────────────────────────
 
 tasks:
-  - name: AI fitness startup
+  - id: startup-easy-v0
+    name: AI fitness startup
     description: Analyze the problem space only.
+    difficulty: easy
     actions: [analyze_problem]
     max_reward: 1.0
-    graders: [grader_easy]
+    grader: backend.grader:EasyGrader
 
-  - name: Food delivery platform
+  - id: startup-medium-v0
+    name: Food delivery platform
     description: Analyze problem and solution.
+    difficulty: medium
     actions: [analyze_problem, analyze_solution]
     max_reward: 1.0
-    graders: [grader_medium]
+    grader: backend.grader:MediumGrader
 
-  - name: Edtech app for students
+  - id: startup-hard-v0
+    name: Edtech app for students
     description: Full pipeline — problem, solution, and market.
+    difficulty: hard
     actions: [analyze_problem, analyze_solution, analyze_market]
     max_reward: 1.0
-    graders: [grader_hard]
-
-# ──────────────────────────────────────────────────────────────────────────
-# Grading
-# ──────────────────────────────────────────────────────────────────────────
-
-grading:
-  grader_easy:
-    module: backend.grader
-    function: grade_easy
-    score_range: [0.001, 0.999]
-
-  grader_medium:
-    module: backend.grader
-    function: grade_medium
-    score_range: [0.001, 0.999]
-
-  grader_hard:
-    module: backend.grader
-    function: grade_hard
-    score_range: [0.001, 0.999]
+    grader: backend.grader:HardGrader
 
 # ──────────────────────────────────────────────────────────────────────────
 # Agent

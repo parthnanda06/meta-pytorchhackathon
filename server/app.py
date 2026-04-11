@@ -1,6 +1,8 @@
+from backend.app import app
+
 def main():
-    """Dummy main for multi-mode deployment compliance."""
-    print("Multi-mode deployment bridge active.")
+    """Deployment bridge for OpenEnv compliance."""
+    app.run(host="0.0.0.0", port=7860)
 
 if __name__ == "__main__":
     main()

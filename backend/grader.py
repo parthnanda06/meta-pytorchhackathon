@@ -99,13 +99,35 @@ def grade(state: Dict[str, Any]) -> float:
 
 
 # ---------------------------------------------------------------------------
-# Grading wrappers
+# Grading Classes (OpenEnv Spec Compliance)
+# ---------------------------------------------------------------------------
+
+class EasyGrader:
+    def grade(self, env, *args, **kwargs) -> float:
+        """Grading for easy difficulty (problem only)."""
+        state = env.state() if hasattr(env, 'state') else env
+        return grade(state)
+
+class MediumGrader:
+    def grade(self, env, *args, **kwargs) -> float:
+        """Grading for medium difficulty (problem + solution)."""
+        state = env.state() if hasattr(env, 'state') else env
+        return grade(state)
+
+class HardGrader:
+    def grade(self, env, *args, **kwargs) -> float:
+        """Grading for hard difficulty (full pipeline)."""
+        state = env.state() if hasattr(env, 'state') else env
+        return grade(state)
+
+
+# ---------------------------------------------------------------------------
+# Legacy wrappers (keeping for backward compatibility if needed)
 # ---------------------------------------------------------------------------
 
 def grade_with_llm_score(state):
     return 0.5
 
-# Optional difficulty-specific entry points if required by YAML.
 def grade_easy(state: Dict[str, Any]) -> float:
     return grade(state)
 
