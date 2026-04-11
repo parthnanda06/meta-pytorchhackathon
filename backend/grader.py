@@ -11,16 +11,24 @@ from typing import Any, Dict
 
 
 def safe_score(score):
+    """
+    Paranoid boundary safety for grading.
+    1. Clamp to (0, 1) range immediately.
+    2. Round to 3 decimal places.
+    3. Final clamp to strictly avoid 0.0 and 1.0.
+    """
     try:
         score = float(score)
     except:
         return 0.500
 
-    # Round to 3 decimal places
+    # PRE-ROUND CLAMP: Force into safe territory [0.001, 0.999]
+    score = max(0.001, min(0.999, score))
+
+    # PRECISION: Round to user-requested precision
     score = round(score, 3)
 
-    # HARD BOUNDARIES: [0.01, 0.99] inclusive
-    # 0.0 -> 0.01, 1.0 -> 0.99. Other values like 0.73, 0.99 remain.
+    # POST-ROUND CLAMP: The forbidden zone rule (0 and 1 are strictly banned)
     if score <= 0.0:
         return 0.01
     if score >= 1.0:
